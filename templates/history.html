@@ -1,0 +1,152 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Summarizer - History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Summarized Articles History</h1>
+
+        {% if articles %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Publication Date</th>
+                    <th>Summary</th>
+                    <th>Sentiment</th>
+                    <th>URL</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in articles %}
+                <tr>
+                    <td>{{ article.title }}</td>
+                    <td>{{ article.author }}</td>
+                    <td>{{ article.publication }}</td>
+                    <td>{{ article.summary }}</td>
+                    <td>{{ article.sentiment }}</td>
+                    <td><a href="{{ article.url }}" target="_blank">Read more</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No articles found in history.</p>
+        {% endif %}
+
+        <a href="/" class="back-btn">Back to Summarizer</a>
+    </div>
+</body>
+</html> -->
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Articles History</title>
+</head>
+<body>
+    <h1>Saved Articles</h1>
+    <table border="1">
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Publication Date</th>
+            <th>Summary</th>
+            <th>Sentiment</th>
+            <th>URL</th>
+        </tr>
+        {% for article in articles %}
+        <tr>
+            <td>{{ article[1] }}</td>
+            <td>{{ article[2] }}</td>
+            <td>{{ article[3] }}</td>
+            <td>{{ article[4] }}</td>
+            <td>{{ article[5] }}</td>
+            <td><a href="{{ article[6] }}" target="_blank">Read Article</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="/">Back to Home</a>
+</body>
+</html> -->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summarized Articles - History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="mode-toggle">
+        <button id="theme-toggle">Switch to Dark Mode</button>
+    </div>
+
+    <div class="container">
+        <h1>Summarized Articles History</h1>
+
+        <div class="history-link">
+            <a href="/">Go Back to Home</a>
+        </div>
+
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Publication Date</th>
+                    <th>Summary</th>
+                    <th>Sentiment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>{{ row[1] }}</td>
+                        <td>{{ row[2] }}</td>
+                        <td>{{ row[3] }}</td>
+                        <td>{{ row[4] }}</td>
+                        <td>{{ row[5] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        // Apply saved theme
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            themeToggle.textContent = currentTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        }
+
+        // Event listener for theme toggle
+        themeToggle.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.textContent = 'Switch to Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = 'Switch to Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+    </script>
+</body>
+</html>
+

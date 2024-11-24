@@ -1,0 +1,211 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Summarizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="mode-toggle">
+        <button id="theme-toggle">Switch to Dark Mode</button>
+    </div>
+
+    <div class="container">
+        <h1>News Summarizer</h1>
+
+        <!-- Link to History Page -->
+        <div class="history-link">
+            <a href="/history">View Summarized Articles</a>
+        </div>
+
+        <form method="POST" class="search-form">
+            <input type="text" name="url" class="url-input" placeholder="Enter Article URL" required>
+            <button type="submit" class="submit-btn" disabled>Summarize</button>
+        </form>
+
+        <div class="result-box">
+            <h2>Title</h2>
+            <p>{{ title if title else "No title available." }}</p>
+        </div>
+
+        <div class="result-box">
+            <h2>Author</h2>
+            <p>{{ author if author else "Unknown author." }}</p>
+        </div>
+
+        <div class="result-box">
+            <h2>Publication Date</h2>
+            <p>{{ publication if publication else "Unknown date." }}</p>
+        </div>
+
+        <div class="result-box" id="summary-box">
+            <h2>Summary</h2>
+            <p>{{ summary if summary else "No summary available." }}</p>
+        </div>
+
+        <div class="result-box">
+            <h2>Sentiment Analysis</h2>
+            <p>{{ sentiment if sentiment else "No sentiment analysis available." }}</p>
+        </div>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        // Apply saved theme
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            themeToggle.textContent = currentTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        }
+
+        // Event listener for theme toggle
+        themeToggle.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.textContent = 'Switch to Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = 'Switch to Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.querySelector(".search-form");
+            const urlInput = document.querySelector(".url-input");
+            const submitButton = document.querySelector(".submit-btn");
+
+            // Disable the submit button by default
+            submitButton.disabled = true;
+
+            // Enable submit button when URL input is not empty
+            urlInput.addEventListener("input", () => {
+                submitButton.disabled = !urlInput.value;
+            });
+
+            // Form submission check
+            form.addEventListener("submit", (e) => {
+                if (!urlInput.value) {
+                    alert("Please enter a URL to summarize!");
+                    e.preventDefault(); // Prevents form submission
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Summarizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="mode-toggle">
+        <button id="theme-toggle">Switch to Dark Mode</button>
+    </div>
+
+    <div class="container">
+        <h1>News Summarizer</h1>
+        <form method="POST" class="search-form">
+            <input type="text" name="url" class="url-input" placeholder="Enter Article URL" required>
+            <button type="submit" class="submit-btn" disabled>Summarize</button>
+        </form>
+
+        <div class="result-box">
+            <h2>Title</h2>
+            <p>{{ title if title else "No title available." }}</p>
+        </div>
+
+        <div class="result-box">
+            <h2>Author</h2>
+            <p>{{ author if author else "Unknown author." }}</p>
+        </div>
+
+        <div class="result-box">
+            <h2>Publication Date</h2>
+            <p>{{ publication if publication else "Unknown date." }}</p>
+        </div>
+
+        <div class="result-box" id="summary-box">
+            <h2>Summary</h2>
+            <p>{{ summary if summary else "No summary available." }}</p>
+        </div>
+
+        <div class="result-box">
+            <h2>Sentiment Analysis</h2>
+            <p>{{ sentiment if sentiment else "No sentiment analysis available." }}</p>
+        </div>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme');
+
+        // Apply saved theme
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            themeToggle.textContent = currentTheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+        }
+
+        // Event listener for theme toggle
+        themeToggle.addEventListener('click', () => {
+            let theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                themeToggle.textContent = 'Switch to Dark Mode';
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = 'Switch to Light Mode';
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.querySelector(".search-form");
+            const urlInput = document.querySelector(".url-input");
+            const submitButton = document.querySelector(".submit-btn");
+
+            // Disable the submit button by default
+            submitButton.disabled = true;
+
+            // Enable submit button when URL input is not empty
+            urlInput.addEventListener("input", () => {
+                submitButton.disabled = !urlInput.value;
+            });
+
+            // Form submission check
+            form.addEventListener("submit", (e) => {
+                if (!urlInput.value) {
+                    alert("Please enter a URL to summarize!");
+                    e.preventDefault(); // Prevents form submission
+                }
+            });
+        });
+    </script>
+</body>
+</html> -->
