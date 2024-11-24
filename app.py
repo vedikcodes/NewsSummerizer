@@ -5,6 +5,7 @@ import sqlite3
 import os
 import nltk
 
+# Download necessary resources for nltk
 nltk.download('punkt')
 
 app = Flask(__name__, static_url_path='/static')
@@ -39,13 +40,19 @@ def index():
     if request.method == 'POST':
         url = request.form.get('url')
         try:
+            # Fetch article from the given URL
             article = Article(url)
             article.download()
             article.parse()
             article.nlp()
 
+            # Debugging output: check article content
+            print(f"Article Title: {article.title}")
+            print(f"Article Text (first 200 characters): {article.text[:200]}")
+
             # Perform sentiment analysis
             analysis = TextBlob(article.text)
+            print(f"Sentiment Analysis: {analysis.sentiment}")
 
             # Get article details
             title = article.title if article.title else "No title"
@@ -55,6 +62,7 @@ def index():
             sentiment = f'Polarity: {analysis.polarity}, Sentiment: {"positive" if analysis.polarity > 0 else "negative" if analysis.polarity < 0 else "neutral"}'
 
             # Save article in database
+            print(f"Inserting into DB: {title}, {author}, {publication}, {summary}, {sentiment}")
             conn = sqlite3.connect('articles.db')
             cursor = conn.cursor()
             cursor.execute('''
@@ -66,6 +74,7 @@ def index():
 
         except Exception as e:
             error = f"Error: {str(e)}"
+            print(f"Error: {str(e)}")
 
     return render_template('index.html', title=title, author=author, publication=publication, summary=summary, sentiment=sentiment, error=error)
 
@@ -82,11 +91,8 @@ def history():
 
 if __name__ == '__main__':
     init_db()  # Initialize the database
-    port = int(os.environ.get("PORT", 5000))
+    port = int(os.environ.get("PORT", 5000))  # Use the PORT for Render deployment
     app.run(debug=True, host="0.0.0.0", port=port)
-
-
-
 
 
 
