@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from newspaper import Article
 from textblob import TextBlob
 import sqlite3
-import requests
+import os
 
 app = Flask(__name__, static_url_path='/static')
 
@@ -35,12 +35,7 @@ def index():
     if request.method == 'POST':
         url = request.form.get('url')
         article = Article(url)
-        
-        # Set a custom User-Agent to simulate a browser request
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'}
-        
-        # Download the article with custom headers
-        article.download(url, headers=headers)
+        article.download()
         article.parse()
         article.nlp()
 
@@ -79,109 +74,9 @@ def history():
 
 if __name__ == '__main__':
     init_db()  # Initialize the database
-    app.run(debug=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# from flask import Flask, render_template, request
-# from newspaper import Article
-# from textblob import TextBlob
-# import sqlite3
-# import os
-
-# app = Flask(__name__, static_url_path='/static')
-
-# # Database setup
-# def init_db():
-#     conn = sqlite3.connect('articles.db')
-#     cursor = conn.cursor()
-#     cursor.execute('''
-#         CREATE TABLE IF NOT EXISTS articles (
-#             id INTEGER PRIMARY KEY AUTOINCREMENT,
-#             title TEXT,
-#             author TEXT,
-#             publication TEXT,
-#             summary TEXT,
-#             sentiment TEXT
-#         )
-#     ''')
-#     conn.commit()
-#     conn.close()
-
-# # Home Route to Summarize Articles
-# @app.route('/', methods=['GET', 'POST'])
-# def index():
-#     title = None
-#     author = None
-#     publication = None
-#     summary = None
-#     sentiment = None
-
-#     if request.method == 'POST':
-#         url = request.form.get('url')
-#         article = Article(url)
-#         article.download()
-#         article.parse()
-#         article.nlp()
-
-#         # Perform sentiment analysis
-#         analysis = TextBlob(article.text)
-
-#         # Get article details
-#         title = article.title
-#         author = ', '.join(article.authors)
-#         publication = article.publish_date if article.publish_date else "Unknown"
-#         summary = article.summary
-#         sentiment = f'Polarity: {analysis.polarity}, Sentiment: {"positive" if analysis.polarity > 0 else "negative" if analysis.polarity < 0 else "neutral"}'
-
-#         # Save article in database
-#         conn = sqlite3.connect('articles.db')
-#         cursor = conn.cursor()
-#         cursor.execute('''
-#             INSERT INTO articles (title, author, publication, summary, sentiment)
-#             VALUES (?, ?, ?, ?, ?)
-#         ''', (title, author, publication, summary, sentiment))
-#         conn.commit()
-#         conn.close()
-
-#     return render_template('index.html', title=title, author=author, publication=publication, summary=summary, sentiment=sentiment)
-
-# # History Route to View Summarized Articles
-# @app.route('/history')
-# def history():
-#     conn = sqlite3.connect('articles.db')
-#     cursor = conn.cursor()
-#     cursor.execute('SELECT * FROM articles')
-#     rows = cursor.fetchall()
-#     conn.close()
-
-#     return render_template('history.html', rows=rows)
-
-# if __name__ == '__main__':
-#     init_db()  # Initialize the database
-#     # Use the PORT from environment variable for Render deployment
-#     port = int(os.environ.get("PORT", 5000))
-#     app.run(debug=True, host="0.0.0.0", port=port)
+    # Use the PORT from environment variable for Render deployment
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, host="0.0.0.0", port=port)
 
 
 
