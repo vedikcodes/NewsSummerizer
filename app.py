@@ -1,11 +1,10 @@
 from flask import Flask, render_template, request
-from newspaper import Article
+from newspaper import Article, Config
 from textblob import TextBlob
 import sqlite3
 import os
 import nltk
 
-# Download necessary resources for nltk
 nltk.download('punkt')
 
 app = Flask(__name__, static_url_path='/static')
@@ -40,19 +39,17 @@ def index():
     if request.method == 'POST':
         url = request.form.get('url')
         try:
-            # Fetch article from the given URL
-            article = Article(url)
+            user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+            config = Config()
+            config.browser_user_agent = user_agent
+
+            article = Article(url, config=config)
             article.download()
             article.parse()
             article.nlp()
 
-            # Debugging output: check article content
-            print(f"Article Title: {article.title}")
-            print(f"Article Text (first 200 characters): {article.text[:200]}")
-
             # Perform sentiment analysis
             analysis = TextBlob(article.text)
-            print(f"Sentiment Analysis: {analysis.sentiment}")
 
             # Get article details
             title = article.title if article.title else "No title"
@@ -62,7 +59,6 @@ def index():
             sentiment = f'Polarity: {analysis.polarity}, Sentiment: {"positive" if analysis.polarity > 0 else "negative" if analysis.polarity < 0 else "neutral"}'
 
             # Save article in database
-            print(f"Inserting into DB: {title}, {author}, {publication}, {summary}, {sentiment}")
             conn = sqlite3.connect('articles.db')
             cursor = conn.cursor()
             cursor.execute('''
@@ -73,8 +69,7 @@ def index():
             conn.close()
 
         except Exception as e:
-            error = f"Error: {str(e)}"
-            print(f"Error: {str(e)}")
+            error = f"Unable to process the article. Error: {str(e)}"
 
     return render_template('index.html', title=title, author=author, publication=publication, summary=summary, sentiment=sentiment, error=error)
 
@@ -91,8 +86,127 @@ def history():
 
 if __name__ == '__main__':
     init_db()  # Initialize the database
-    port = int(os.environ.get("PORT", 5000))  # Use the PORT for Render deployment
+    port = int(os.environ.get("PORT", 5000))
     app.run(debug=True, host="0.0.0.0", port=port)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# from flask import Flask, render_template, request
+# from newspaper import Article
+# from textblob import TextBlob
+# import sqlite3
+# import os
+# import nltk
+
+# # Download necessary resources for nltk
+# nltk.download('punkt')
+
+
+# app = Flask(__name__, static_url_path='/static')
+
+# # Database setup
+# def init_db():
+#     conn = sqlite3.connect('articles.db')
+#     cursor = conn.cursor()
+#     cursor.execute('''
+#         CREATE TABLE IF NOT EXISTS articles (
+#             id INTEGER PRIMARY KEY AUTOINCREMENT,
+#             title TEXT,
+#             author TEXT,
+#             publication TEXT,
+#             summary TEXT,
+#             sentiment TEXT
+#         )
+#     ''')
+#     conn.commit()
+#     conn.close()
+
+# # Home Route to Summarize Articles
+# @app.route('/', methods=['GET', 'POST'])
+# def index():
+#     title = None
+#     author = None
+#     publication = None
+#     summary = None
+#     sentiment = None
+#     error = None
+
+#     if request.method == 'POST':
+#         url = request.form.get('url')
+#         try:
+#             # Fetch article from the given URL
+#             article = Article(url)
+#             article.download()
+#             article.parse()
+#             article.nlp()
+
+#             # Debugging output: check article content
+#             print(f"Article Title: {article.title}")
+#             print(f"Article Text (first 200 characters): {article.text[:200]}")
+
+#             # Perform sentiment analysis
+#             analysis = TextBlob(article.text)
+#             print(f"Sentiment Analysis: {analysis.sentiment}")
+
+#             # Get article details
+#             title = article.title if article.title else "No title"
+#             author = ', '.join(article.authors) if article.authors else "No author"
+#             publication = article.publish_date if article.publish_date else "Unknown"
+#             summary = article.summary
+#             sentiment = f'Polarity: {analysis.polarity}, Sentiment: {"positive" if analysis.polarity > 0 else "negative" if analysis.polarity < 0 else "neutral"}'
+
+#             # Save article in database
+#             print(f"Inserting into DB: {title}, {author}, {publication}, {summary}, {sentiment}")
+#             conn = sqlite3.connect('articles.db')
+#             cursor = conn.cursor()
+#             cursor.execute('''
+#                 INSERT INTO articles (title, author, publication, summary, sentiment)
+#                 VALUES (?, ?, ?, ?, ?)
+#             ''', (title, author, publication, summary, sentiment))
+#             conn.commit()
+#             conn.close()
+
+#         except Exception as e:
+#             error = f"Error: {str(e)}"
+#             print(f"Error: {str(e)}")
+
+#     return render_template('index.html', title=title, author=author, publication=publication, summary=summary, sentiment=sentiment, error=error)
+
+# # History Route to View Summarized Articles
+# @app.route('/history')
+# def history():
+#     conn = sqlite3.connect('articles.db')
+#     cursor = conn.cursor()
+#     cursor.execute('SELECT * FROM articles')
+#     rows = cursor.fetchall()
+#     conn.close()
+
+#     return render_template('history.html', rows=rows)
+
+# if __name__ == '__main__':
+#     init_db()  # Initialize the database
+#     port = int(os.environ.get("PORT", 5000))  # Use the PORT for Render deployment
+#     app.run(debug=True, host="0.0.0.0", port=port)
 
 
 
@@ -123,8 +237,7 @@ if __name__ == '__main__':
 # from textblob import TextBlob
 # import sqlite3
 # import os
-# import nltk
-# nltk.download('punkt')
+
 
 
 # app = Flask(__name__, static_url_path='/static')
